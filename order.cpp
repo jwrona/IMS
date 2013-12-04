@@ -2,6 +2,9 @@
 
 Order::Order(void)
 {
+    assert((businness_level+ bowling_level + others_level) == 100.0);
+    id = all_order_cntr++;
+
     /*
      * order priority assignment in at the specified ratio
      */
@@ -17,64 +20,106 @@ Order::Order(void)
 
 void Order::Behavior(void)
 {
-    std::cout << "*** " << Time << " ***" << std::endl;
+    DEBUG("***O:\t\t\t");
+
     income = Time;
     H((double) Priority);
 
-    std::cout << "pred seize" << std::endl;
-    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+    /* seize by the first Order in the queue */
+    Seize(F1);
+    DEBUG("O: zarizeni zabrano\t");
 
-    Seize(F1); //seize by the first order in the queue
-    std::cout << "po seize" << std::endl;
-    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
-
-    //make batch from the top of this facility queue
-    //push order which is occupying facility to the batch
+    /*
+     * create batch
+     * push order which is occupying facility to the batch
+     */
     Batch *new_batch = new Batch(static_cast<Order*>(F1.in));
 
-    //fill batch with orders
-    //pop from the top of the facility queue, push into batch
+    /*
+     * fill batch with orders
+     * pop from the top of the facility queue, push into batch
+     */
+    DEBUG("O: fronta pred pushem:\t" << F1.Q1->Length());
     while (!F1.Q1->Empty() && !new_batch->is_full())
-    {
 	new_batch->add_order(static_cast<Order*>(F1.Q1->GetFirst()));
-    }
 
-    //activate batch processing
-    new_batch->Activate();
+    DEBUG("O: fronta po pushi:\t" << F1.Q1->Length());
 
-    std::cout << "pred release" << std::endl;
-    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+    //std::cout << "fronta pred insertem: " << F1.Q1->Length() << std::endl;
+    F1.Q1->Insert(new_batch);
+    //std::cout << "fronta po insertu : " << F1.Q1->Length() << std::endl;
+    /* activate batch processing */
+    //new_batch->Activate();
+    //new_batch->Passivate();
+
+    /*
+     * release by the first Order in the queue
+     * created batch should be at firt place in the queue by now
+     * so the batch should seize the facility right after this release
+     */
+    assert(F1.in == this);
+    DEBUG("O: fronta pred releasem:" << F1.Q1->Length());
+
     Release(F1);
-    std::cout << "po release" << std::endl;
-    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
 
-    //std::cout << "is queue empty? " << F1.Q1->Empty() \
-	      << "\tis batch full?" << new_batch->is_full() << std::endl;
+    assert(F1.in == new_batch);
+    DEBUG("O: fronta po releasu:\t" << F1.Q1->Length());
 
     total_time(Time - income);
 }
 
+/*
+ * Constructor calls its parent class Process constructor
+ * to set highest priority. This ensure Batch
+ * will be first at facility queue and will be activated
+ * before any Order processes scheduled at the same time.
+ */
 Batch::Batch(Order *ord): Process(HIGHEST_PRIORITY)
 {
+    id = all_batch_cntr++;
+    //std::cout << "id = " << id << "\tall_batch_cntr = " << all_batch_cntr << std::endl;
     in_facility = ord;
-    std::cout << "batch = " << this << std::endl;
     add_order(ord);
 }
 
 void Batch::Behavior(void)
 {
-    std::cout << "*** " << Time << " ***" << std::endl;
-    Seize(F1);
-    std::cout << "batch obsahuje " << orders.size() << std::endl;
+    DEBUG("***B:\t\t\t");
 
-    for (unsigned i = 0; i < orders.size(); ++i)
+    assert(F1.Busy());
+    assert(F1.in == this);
+
+    /*
+     * seize facility by batch
+     */
+    //Seize(F1);
+
+    /* no need for high priority from now */
+    Priority = DEFAULT_PRIORITY;
+
+    std::cout << "B: batch obsahuje IDs: ";
+    for(std::vector<Order*>::iterator it = orders.begin();
+        it != orders.end(); ++it)
     {
-       std::cout << "\tcekam " << i << std::endl;
-       Wait(Time + 1.5);
+       std::cout << (*it)->id << ", ";
+    }
+    std::cout << std::endl;
+
+    for(std::vector<Order*>::iterator it = orders.begin();
+        it != orders.end(); ++it)
+    {
+       DEBUG("B: pokracovani v case\t" << (Time + 1.5));
+       Wait(1.5);
     }
 
-    std::cout << "opoustim varku" << std::endl << std::endl;
-    Release(F1); //free for new batch
+    DEBUG("B: opoustim varku\t");
+
+    /*
+     * release facility by batch
+     * facility is now ready to be seized by first order
+     * in its queue to create new batch
+     */
+    Release(F1);
 }
 
 void Batch::add_order(Order *ord)

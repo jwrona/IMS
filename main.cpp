@@ -12,20 +12,22 @@ Histogram total_time("Total time", 0, 100, 10);
 //unsigned int orders_in_system = 0;
 //const unsigned int max_orders_in_system = 10;
 //unsigned int refused_orders = 0;
+unsigned all_order_cntr = 0;
+unsigned all_batch_cntr = 0;
 
 int main(void)
 {
     RandomSeed(time(nullptr)); //initialize random number seed
 
     Print("project pizza\n");
-    Init(0, 100);
+    Init(0, 30);
     (new Generator)->Activate();
     Run();
 
-    F1.Output();
-    F2.Output();
-    H.Output();
-    total_time.Output();
+    //F1.Output();
+    //F2.Output();
+    //H.Output();
+    //total_time.Output();
 /*
     for (simlib3::Queue::iterator iter = F1.Q1->begin(), end = F1.Q1->end();
          iter != end; ++iter)

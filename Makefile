@@ -39,6 +39,8 @@ LIBS = -lsimlib
 all: $(OBJECTS)
 	$(LINK) $(LIBS) $(OFLAG) $(TARGET) $(OBJECTS)
 
+ndebug: CXXFLAGS += -DNDEBUG_PRINT
+ndebug: all
 
 #####################################
 #other rules
