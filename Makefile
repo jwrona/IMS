@@ -9,9 +9,9 @@
 # files
 
 TARGET = pizza
-SOURCES = main.cpp generator.cpp order.cpp
-HEADERS = generator.h order.h
-OBJECTS = main.o generator.o order.o 
+SOURCES = main.cpp generator.cpp order.cpp batch.cpp
+HEADERS = main.h generator.h order.h batch.h
+OBJECTS = main.o generator.o order.o  batch.o
 
 #####################################
 # compiler, linker and options
@@ -39,8 +39,14 @@ LIBS = -lsimlib
 all: $(OBJECTS)
 	$(LINK) $(LIBS) $(OFLAG) $(TARGET) $(OBJECTS)
 
-ndebug: CXXFLAGS += -DNDEBUG_PRINT
-ndebug: all
+ndebug: CXXFLAGS += -DNDEBUG
+ndebug: ndebug_print
+
+ndebug_print: CXXFLAGS += -DNDEBUG_PRINT
+ndebug_print: all
+
+run:
+	./$(TARGET)
 
 #####################################
 #other rules

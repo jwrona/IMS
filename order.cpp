@@ -1,4 +1,5 @@
 #include "order.h"
+#include "batch.h"
 
 Order::Order(void)
 {
@@ -22,6 +23,7 @@ void Order::Behavior(void)
 {
     DEBUG("***O:\t\t\t");
 
+    /* save income time */
     income = Time;
     H((double) Priority);
 
@@ -45,17 +47,22 @@ void Order::Behavior(void)
 
     DEBUG("O: fronta po pushi:\t" << F1.Q1->Length());
 
-    //std::cout << "fronta pred insertem: " << F1.Q1->Length() << std::endl;
+    /*
+     * insert Batch in the queue, specificaly on the first
+     * place, because Batch has highest priority by default
+     */
     F1.Q1->Insert(new_batch);
-    //std::cout << "fronta po insertu : " << F1.Q1->Length() << std::endl;
-    /* activate batch processing */
-    //new_batch->Activate();
-    //new_batch->Passivate();
 
     /*
-     * release by the first Order in the queue
-     * created batch should be at firt place in the queue by now
-     * so the batch should seize the facility right after this release
+     * no need to activate batch process
+     * it allready is in queue, after Release() by this instance,
+     * new_batch will seize it and activate itselfs afterwards
+     */
+    //new_batch->Activate();
+
+    /*
+     * releasing the faciliti will cause its seize by Batch
+     * because it is first in the queue
      */
     assert(F1.in == this);
     DEBUG("O: fronta pred releasem:" << F1.Q1->Length());
@@ -65,78 +72,6 @@ void Order::Behavior(void)
     assert(F1.in == new_batch);
     DEBUG("O: fronta po releasu:\t" << F1.Q1->Length());
 
+    /* total time in system */
     total_time(Time - income);
-}
-
-/*
- * Constructor calls its parent class Process constructor
- * to set highest priority. This ensure Batch
- * will be first at facility queue and will be activated
- * before any Order processes scheduled at the same time.
- */
-Batch::Batch(Order *ord): Process(HIGHEST_PRIORITY)
-{
-    id = all_batch_cntr++;
-    //std::cout << "id = " << id << "\tall_batch_cntr = " << all_batch_cntr << std::endl;
-    in_facility = ord;
-    add_order(ord);
-}
-
-void Batch::Behavior(void)
-{
-    DEBUG("***B:\t\t\t");
-
-    assert(F1.Busy());
-    assert(F1.in == this);
-
-    /*
-     * seize facility by batch
-     */
-    //Seize(F1);
-
-    /* no need for high priority from now */
-    Priority = DEFAULT_PRIORITY;
-
-    std::cout << "B: batch obsahuje IDs: ";
-    for(std::vector<Order*>::iterator it = orders.begin();
-        it != orders.end(); ++it)
-    {
-       std::cout << (*it)->id << ", ";
-    }
-    std::cout << std::endl;
-
-    for(std::vector<Order*>::iterator it = orders.begin();
-        it != orders.end(); ++it)
-    {
-       DEBUG("B: pokracovani v case\t" << (Time + 1.5));
-       Wait(1.5);
-    }
-
-    DEBUG("B: opoustim varku\t");
-
-    /*
-     * release facility by batch
-     * facility is now ready to be seized by first order
-     * in its queue to create new batch
-     */
-    Release(F1);
-}
-
-void Batch::add_order(Order *ord)
-{
-    if (is_full())
-        Print("Batch is full.\n");
-    else if(std::find(orders.begin(), orders.end(), ord) != orders.end())
-    {
-        Print("Order allready in batch.\n");
-    }
-    else
-    {
-        orders.push_back(ord);
-    }
-}
-
-bool Batch::is_full(void)
-{
-    return (orders.size() == batch_capacity);
 }

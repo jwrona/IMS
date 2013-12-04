@@ -1,7 +1,5 @@
-#include <ctime>
-#include <simlib.h>
+#include "main.h"
 #include "generator.h"
-#include "order.h"
 
 Facility F1("F1");
 Facility F2("F2");
@@ -14,6 +12,9 @@ Histogram total_time("Total time", 0, 100, 10);
 //unsigned int refused_orders = 0;
 unsigned all_order_cntr = 0;
 unsigned all_batch_cntr = 0;
+
+const unsigned char SEC_IN_MIN = 60;
+const unsigned char MIN_IN_HOUR = 60;
 
 int main(void)
 {
@@ -28,12 +29,18 @@ int main(void)
     //F2.Output();
     //H.Output();
     //total_time.Output();
-/*
-    for (simlib3::Queue::iterator iter = F1.Q1->begin(), end = F1.Q1->end();
-         iter != end; ++iter)
-    {
-        std::cout << (unsigned int) F1.Q1->Get(iter)->Priority << std::endl;
-    }
-*/
+
+    std::cout << "5 minuntes = " << min_to_sec(5.5) << std::endl;
+    std::cout << "2 hours = " << hour_to_sec(2.1) << std::endl;
     return EXIT_SUCCESS;
+}
+
+double min_to_sec(double min)
+{
+    return (min * SEC_IN_MIN);
+}
+
+double hour_to_sec(double hour)
+{
+    return (min_to_sec(hour * MIN_IN_HOUR));
 }
