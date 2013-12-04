@@ -17,48 +17,64 @@ Order::Order(void)
 
 void Order::Behavior(void)
 {
+    std::cout << "*** " << Time << " ***" << std::endl;
     income = Time;
     H((double) Priority);
 
-    Seize(F1); //make batch from the top of this facility queue
+    std::cout << "pred seize" << std::endl;
+    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+
+    Seize(F1); //seize by the first order in the queue
+    std::cout << "po seize" << std::endl;
+    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+
+    //make batch from the top of this facility queue
+    //push order which is occupying facility to the batch
+    Batch *new_batch = new Batch(static_cast<Order*>(F1.in));
+
+    //fill batch with orders
+    //pop from the top of the facility queue, push into batch
+    while (!F1.Q1->Empty() && !new_batch->is_full())
     {
-        std::cout << "obsazuji varku" << std::endl;
-	Batch *new_batch = new Batch(static_cast<Order*>(F1.in));
-
-	while (!F1.Q1->Empty() && !new_batch->is_full())
-	{
-	    std::cout << "length before = " << F1.Q1->Length() << std::endl;
-	    new_batch->add_order(static_cast<Order*>(F1.Q1->GetFirst()));
-	    std::cout << "length after = " << F1.Q1->Length() << std::endl;
-	}
-
-	std::cout << "is queue empty? " << F1.Q1->Empty()
-	          << "\tis batch full?" << new_batch->is_full() << std::endl;
-
-	//new_batch->add_order((Order*)F1.in);
-	new_batch->Activate();
+	new_batch->add_order(static_cast<Order*>(F1.Q1->GetFirst()));
     }
+
+    //activate batch processing
+    new_batch->Activate();
+
+    std::cout << "pred release" << std::endl;
+    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+    Release(F1);
+    std::cout << "po release" << std::endl;
+    std::cout << '\t' << static_cast<Order*>(F1.in) << std::endl;
+
+    //std::cout << "is queue empty? " << F1.Q1->Empty() \
+	      << "\tis batch full?" << new_batch->is_full() << std::endl;
 
     total_time(Time - income);
 }
 
-Batch::Batch(Order *ord): in_facility(ord)
+Batch::Batch(Order *ord): Process(HIGHEST_PRIORITY)
 {
+    in_facility = ord;
+    std::cout << "batch = " << this << std::endl;
     add_order(ord);
 }
 
 void Batch::Behavior(void)
 {
+    std::cout << "*** " << Time << " ***" << std::endl;
+    Seize(F1);
     std::cout << "batch obsahuje " << orders.size() << std::endl;
 
     for (unsigned i = 0; i < orders.size(); ++i)
     {
        std::cout << "\tcekam " << i << std::endl;
-       Wait(Exponential(1));
+       Wait(Time + 1.5);
     }
 
     std::cout << "opoustim varku" << std::endl << std::endl;
-    in_facility->Release(F1); //free for new batch
+    Release(F1); //free for new batch
 }
 
 void Batch::add_order(Order *ord)
