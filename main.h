@@ -4,6 +4,7 @@
 #include <simlib.h>
 #include <ctime>
 #include <iostream>
+#include <vector>
 
 
 double hour_to_min(double);

@@ -8,7 +8,7 @@
 
 #include "macros.h"
 
-extern Facility F1;
+extern Facility chef_fac;
 
 extern unsigned all_batch_cntr;
 
@@ -31,7 +31,9 @@ public:
     Batch(Order*);
 
     void add_order(Order*);
+    void remove_order(Order*);
     bool is_full(void);
+    bool is_empty(void);
 };
 
 #endif //BATCH_H

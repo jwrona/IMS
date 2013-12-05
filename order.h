@@ -8,13 +8,13 @@
 
 #include "macros.h"
 
-
-extern Facility F1;
-
-extern Histogram H;
-extern Histogram total_time;
+extern Facility chef_fac;
 
 extern unsigned all_order_cntr;
+
+/* forward declarations */
+class Timeout;
+class Batch;
 
 class Order: public Process
 {
@@ -32,6 +32,8 @@ class Order: public Process
 
     double income;
     unsigned id;
+    Timeout *t;
+    Batch *batch_im_in;
 
     void Behavior(void);
 
@@ -39,6 +41,10 @@ public:
     Order(void);
     double get_income(void) {return income;};
     unsigned get_id(void) {return id;};
+    Timeout* get_timeout(void) {return t;};
+    void delete_timeout(void);
+    void set_batch(Batch *b) {batch_im_in = b;};
+    Batch* get_batch(void) {return batch_im_in;};
 };
 
 #endif //ORDER_H
