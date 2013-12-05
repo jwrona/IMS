@@ -3,6 +3,5 @@
 void Generator::Behavior()
 {
     (new Order)->Activate();
-    //this->Activate(Time + Uniform(0.0, act_time));
-    this->Activate(Time + 1);
+    this->Activate(Time + Exponential(NEXT_ORD_IN_TIME));
 }

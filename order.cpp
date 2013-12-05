@@ -1,5 +1,6 @@
 #include "order.h"
 #include "batch.h"
+#include "main.h"
 
 Order::Order(void)
 {
@@ -41,11 +42,11 @@ void Order::Behavior(void)
      * fill batch with orders
      * pop from the top of the facility queue, push into batch
      */
-    DEBUG("O: fronta pred pushem:\t" << F1.Q1->Length());
+    //DEBUG("O: fronta pred pushem:\t" << F1.Q1->Length());
     while (!F1.Q1->Empty() && !new_batch->is_full())
 	new_batch->add_order(static_cast<Order*>(F1.Q1->GetFirst()));
 
-    DEBUG("O: fronta po pushi:\t" << F1.Q1->Length());
+    //DEBUG("O: fronta po pushi:\t" << F1.Q1->Length());
 
     /*
      * insert Batch in the queue, specificaly on the first
@@ -65,13 +66,17 @@ void Order::Behavior(void)
      * because it is first in the queue
      */
     assert(F1.in == this);
-    DEBUG("O: fronta pred releasem:" << F1.Q1->Length());
+    //DEBUG("O: fronta pred releasem:" << F1.Q1->Length());
 
     Release(F1);
 
     assert(F1.in == new_batch);
-    DEBUG("O: fronta po releasu:\t" << F1.Q1->Length());
+    //DEBUG("O: fronta po releasu:\t" << F1.Q1->Length());
 
-    /* total time in system */
-    total_time(Time - income);
+    /*
+     * Passivate for the first process who created the batch.
+     * Other processes are stucked before Seize() and cannot
+     * be Activated, so they all have to be Canceled in Batch.
+     */
+    Passivate();
 }

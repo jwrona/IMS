@@ -13,16 +13,17 @@ Histogram total_time("Total time", 0, 100, 10);
 unsigned all_order_cntr = 0;
 unsigned all_batch_cntr = 0;
 
-const unsigned char SEC_IN_MIN = 60;
 const unsigned char MIN_IN_HOUR = 60;
+
+const double Generator::NEXT_ORD_IN_TIME = 2.0;
 
 int main(void)
 {
     RandomSeed(time(nullptr)); //initialize random number seed
 
     Print("project pizza\n");
-    Init(0, 30);
-    (new Generator)->Activate();
+    Init(0.0, 200.0);
+    (new Generator)->Activate(Exponential(Generator::NEXT_ORD_IN_TIME));
     Run();
 
     //F1.Output();
@@ -30,17 +31,10 @@ int main(void)
     //H.Output();
     //total_time.Output();
 
-    std::cout << "5 minuntes = " << min_to_sec(5.5) << std::endl;
-    std::cout << "2 hours = " << hour_to_sec(2.1) << std::endl;
     return EXIT_SUCCESS;
 }
 
-double min_to_sec(double min)
+double hour_to_min(double hour)
 {
-    return (min * SEC_IN_MIN);
-}
-
-double hour_to_sec(double hour)
-{
-    return (min_to_sec(hour * MIN_IN_HOUR));
+    return (hour * MIN_IN_HOUR);
 }

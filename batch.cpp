@@ -1,5 +1,6 @@
 #include "batch.h"
 #include "order.h"
+#include "main.h"
 
 /*
  * Constructor calls its parent class Process constructor
@@ -26,16 +27,16 @@ void Batch::Behavior(void)
     /* no need for high priority from now */
     Priority = DEFAULT_PRIORITY;
 
-    #ifndef NDEBUG_PRINT
+#ifndef NDEBUG_PRINT
     //prints IDs of order processes in this batch
-    std::cout << "B: batch obsahuje IDs: ";
+    std::cout << "B: zacatek batch obsahuje IDs: ";
     for(std::vector<Order*>::iterator it = orders.begin();
         it != orders.end(); ++it)
     {
-       std::cout << (*it)->id << ", ";
+       std::cout << (*it)->get_id() << ", ";
     }
     std::cout << std::endl;
-    #endif //NDEBUG_PRINT
+#endif //NDEBUG_PRINT
 
     /*
      * loop through all orders in batch
@@ -43,11 +44,22 @@ void Batch::Behavior(void)
     for(std::vector<Order*>::iterator it = orders.begin();
         it != orders.end(); ++it)
     {
-       DEBUG("B: pokracovani v case\t" << (Time + 1.5));
-       Wait(1.5);
+       /* wait for 2 to 3 minutes for every pizza */
+       Wait(Uniform(PREP_TIME_FROM, PREP_TIME_TO));
     }
 
-    DEBUG("B: opoustim varku\t");
+    DEBUG("B: varka hotova\t\t");
+
+    /*
+     * loop through all orders in batch to
+     * create statistics and cancel orders processes
+     * (they are all passivated)
+     */
+    for(std::vector<Order*>::iterator it = orders.begin();
+        it != orders.end(); ++it)
+    {
+       (*it)->Cancel();
+    }
 
     /*
      * release facility by batch
@@ -69,5 +81,5 @@ void Batch::add_order(Order *ord)
 
 bool Batch::is_full(void)
 {
-    return (orders.size() == batch_capacity);
+    return (orders.size() == BATCH_CAPACITY);
 }

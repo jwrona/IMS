@@ -17,7 +17,9 @@ class Order;
 
 class Batch: public Process
 {
-    const unsigned batch_capacity = 4;
+    const unsigned BATCH_CAPACITY = 4;
+    const double PREP_TIME_FROM = 2.0;
+    const double PREP_TIME_TO = 3.0;
 
     std::vector<Order*> orders;
     Order *in_facility;

@@ -6,7 +6,6 @@
 #include <iostream>
 
 
-double hour_to_sec(double);
-double min_to_sec(double);
+double hour_to_min(double);
 
 #endif //MAIN_H

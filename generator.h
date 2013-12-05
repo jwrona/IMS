@@ -6,8 +6,10 @@
 
 class Generator: public Event
 {
-    const double act_time = 10.0;
     void Behavior();
+
+public:
+    static const double NEXT_ORD_IN_TIME;
 };
 
 #endif //GENERATOR_H

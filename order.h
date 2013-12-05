@@ -31,12 +31,14 @@ class Order: public Process
     const double others_level    = 70.0; //%
 
     double income;
+    unsigned id;
 
     void Behavior(void);
 
 public:
     Order(void);
-    unsigned id;
+    double get_income(void) {return income;};
+    unsigned get_id(void) {return id;};
 };
 
 #endif //ORDER_H
