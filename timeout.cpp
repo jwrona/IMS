@@ -14,8 +14,23 @@ void Timeout::Behavior(void)
 
     Batch* b = nullptr;
     if ((b = Id->get_batch()) != nullptr)
+    {
+        /* order is in batch allready, cancel will be executed
+	 * in batch */
         b->remove_order(Id);
+    }
+    else
+    {
+        /* process not in batch yet */
+        Id->Cancel();
+    }
 
-    Id->Cancel();
     Cancel();
 }
+
+/*
+Timeout::~Timeout()
+{
+    std::cout << "Rusim timeout" << std::endl;
+}
+*/

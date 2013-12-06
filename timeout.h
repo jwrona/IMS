@@ -3,6 +3,8 @@
 
 #include <simlib.h>
 
+#include "macros.h"
+
 /* forward declarations */
 class Order;
 
@@ -14,6 +16,7 @@ class Timeout: public Event
 
 public:
     Timeout(Order*, double);
+    ~Timeout() {};
 };
 
 #endif //TIMEOUT_H

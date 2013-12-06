@@ -19,7 +19,7 @@ int main(void)
     RandomSeed(time(nullptr));
 
     Print("project pizza\n");
-    Init(0.0, hour_to_min(2.0));
+    Init(0.0, hour_to_min(1.0));
     (new Generator)->Activate(Exponential(Generator::NEXT_ORD_IN_TIME));
     Run();
 

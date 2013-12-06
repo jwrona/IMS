@@ -3,26 +3,45 @@
 #include "batch.h"
 #include "timeout.h"
 
-Order::Order(void)
+Order::Order(bool reparation)
 {
     assert((businness_level+ bowling_level + others_level) == 100.0);
 
     id = all_order_cntr++;
     batch_im_in = nullptr;
-    t = new Timeout(this, 3);
+    t = new Timeout(this, Exponential(100));
 
-    /*
-     * order priority assignment in at the specified ratio
-     */
-    double rnd = Uniform(0.0, 100.0); // 0 - 100 %
-
-    if (rnd <= businness_level)
-        Priority = BUSINESS;
-    else if (rnd <= (businness_level + bowling_level))
-        Priority = BOWLING;
+    if (reparation)
+    {
+        /* reparations have priority over everything */
+        Priority = REPARATION;
+    }
     else
-        Priority = OTHERS;
+    {
+	/* order priority assignment in at the specified ratio */
+	double rnd = Uniform(0.0, 100.0); // 0 - 100 %
+
+	if (rnd <= businness_level)
+	    Priority = BUSINESS;
+	else if (rnd <= (businness_level + bowling_level))
+	    Priority = BOWLING;
+	else
+	    Priority = OTHERS;
+    }
 }
+
+Order::~Order(void)
+{
+    /* cancel timeout if its not null pointer and
+     * it doesn't run right now (process made it to the end)
+     */
+    if ((t != nullptr) && (!t->Idle()))
+    {
+	t->Cancel();
+	t = nullptr;
+    }
+}
+
 
 void Order::Behavior(void)
 {
@@ -84,8 +103,9 @@ void Order::Behavior(void)
     Passivate();
 }
 
-void Order::delete_timeout(void)
+void Order::repare(void)
 {
-    if (t != nullptr)
-        delete t;
+    Priority = REPARATION;
+    chef_fac.Q1->Insert(this); //causes SIGSEV, WHY?
+    std::cout << "inserted" << std::endl;
 }

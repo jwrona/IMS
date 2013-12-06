@@ -18,33 +18,38 @@ class Batch;
 
 class Order: public Process
 {
-
+public:
     enum PriorityEnum
     {
         OTHERS,
         BOWLING,
-        BUSINESS
+        BUSINESS,
+	REPARATION
     };
 
+private:
     const double businness_level = 10.0; //%
     const double bowling_level   = 20.0; //%
     const double others_level    = 70.0; //%
 
     double income;
     unsigned id;
-    Timeout *t;
     Batch *batch_im_in;
 
     void Behavior(void);
 
 public:
-    Order(void);
+    Order(bool reparation = false);
+    ~Order();
+
+    Timeout *t = nullptr;
+
     double get_income(void) {return income;};
     unsigned get_id(void) {return id;};
     Timeout* get_timeout(void) {return t;};
-    void delete_timeout(void);
     void set_batch(Batch *b) {batch_im_in = b;};
     Batch* get_batch(void) {return batch_im_in;};
+    void repare(void);
 };
 
 #endif //ORDER_H

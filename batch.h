@@ -20,9 +20,10 @@ class Batch: public Process
     const unsigned BATCH_CAPACITY = 4;
     const double PREP_TIME_FROM = 2.0;
     const double PREP_TIME_TO = 3.0;
+    const double PREP_ERR_RATE = 50.0; //%
 
     std::vector<Order*> orders;
-    Order *in_facility;
+    std::vector<Order*> removed_orders;
     unsigned id;
 
     void Behavior(void);
