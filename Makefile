@@ -25,11 +25,11 @@ LINK = $(CXX)
 LIBS = -lsimlib
 
 UNAME_N := $(shell uname -n)
-    ifeq ($(UNAME_N),merlin.fit.vutbr.cz)
-        CXX += g++-4.7
-    else
-        CXX += g++
-    endif
+ifeq ($(UNAME_N),merlin.fit.vutbr.cz)
+    CXX += g++-4.7
+else
+    CXX += g++
+endif
 
 #####################################
 # suffix rules
