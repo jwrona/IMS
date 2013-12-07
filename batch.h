@@ -9,6 +9,8 @@
 #include "macros.h"
 
 extern Facility chef_fac;
+extern Facility oven_fac;
+extern Store delivery_store;
 
 extern unsigned all_batch_cntr;
 
@@ -17,13 +19,20 @@ class Order;
 
 class Batch: public Process
 {
-    const unsigned BATCH_CAPACITY = 4;
-    const double PREP_TIME_FROM = 2.0;
-    const double PREP_TIME_TO = 3.0;
-    const double PREP_ERR_RATE = 50.0; //%
+    const unsigned BATCH_CAPACITY = 4; //orders
+
+    const double PREP_TIME_FROM = 2.0; //minutes
+    const double PREP_TIME_TO = 3.0; //minutes
+    const double PREP_ERR_RATE = 1.0; //%
+
+    const double BAKING_TIME = 4.0; //minutes
+    const double BAKING_ERR_RATE = 1.0; //%
+
+    const double DELIV_TIME_FROM = 10.0; //minutes
+    const double DELIV_TIME_TO = 15.0; //minutes
 
     std::vector<Order*> orders;
-    std::vector<Order*> removed_orders;
+    //std::vector<Order*> removed_orders;
     unsigned id;
 
     void Behavior(void);

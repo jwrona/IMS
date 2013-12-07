@@ -9,8 +9,7 @@ Timeout::Timeout(Order *o, double dt): Id(o)
 
 void Timeout::Behavior(void)
 {
-    std::cout << "vyprsel casovac objednavce " << Id->get_id() \
-    << "\tv case " << Time << std::endl;
+    //std::cout << "TIMER EXPIRED FOR " << Id->get_id() << std::cout;
 
     Batch* b = nullptr;
     if ((b = Id->get_batch()) != nullptr)
@@ -27,10 +26,3 @@ void Timeout::Behavior(void)
 
     Cancel();
 }
-
-/*
-Timeout::~Timeout()
-{
-    std::cout << "Rusim timeout" << std::endl;
-}
-*/

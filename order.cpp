@@ -5,11 +5,13 @@
 
 Order::Order(bool reparation)
 {
-    assert((businness_level+ bowling_level + others_level) == 100.0);
+    assert((BUSINNESS_LEVEL+ BOWLING_LEVEL + OTHERS_LEVEL) == 100.0);
 
     id = all_order_cntr++;
     batch_im_in = nullptr;
-    t = new Timeout(this, Exponential(100));
+    double timeout_length = MAX_TIMEOUT_LENGTH
+                            - Exponential(1.0 / TIMEOUT_EXP_SLOPE);
+    t = new Timeout(this, timeout_length);
 
     if (reparation)
     {
@@ -21,9 +23,9 @@ Order::Order(bool reparation)
 	/* order priority assignment in at the specified ratio */
 	double rnd = Uniform(0.0, 100.0); // 0 - 100 %
 
-	if (rnd <= businness_level)
+	if (rnd <= BUSINNESS_LEVEL)
 	    Priority = BUSINESS;
-	else if (rnd <= (businness_level + bowling_level))
+	else if (rnd <= (BUSINNESS_LEVEL + BOWLING_LEVEL))
 	    Priority = BOWLING;
 	else
 	    Priority = OTHERS;
@@ -45,14 +47,13 @@ Order::~Order(void)
 
 void Order::Behavior(void)
 {
-    DEBUG("***O:\t\t\t");
+    //DEBUG("***O:\t\t\t");
 
     /* save income time */
     income = Time;
 
     /* seize by the first Order in the queue */
     Seize(chef_fac);
-    DEBUG("O: zarizeni zabrano\t");
 
     /*
      * create batch

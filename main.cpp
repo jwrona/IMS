@@ -1,7 +1,22 @@
+#include <simlib.h>
+#include <iostream>
+#include <chrono>
+
 #include "main.h"
 #include "generator.h"
+#include "daytime.h"
 
-Facility chef_fac("Chef");
+Queue chef_que("Chef");
+Facility chef_fac("Chef", &chef_que);
+
+Queue oven_que("Oven");
+Facility oven_fac("Oven", &oven_que);
+
+const unsigned DELIVERY_CARS = 3;
+Queue delivery_que("Delivery");
+Store delivery_store("Delivery", DELIVERY_CARS, &delivery_que);
+
+Generator order_generator;
 
 //unsigned int orders_in_system = 0;
 //const unsigned int max_orders_in_system = 10;
@@ -9,26 +24,31 @@ Facility chef_fac("Chef");
 unsigned all_order_cntr = 0;
 unsigned all_batch_cntr = 0;
 
-const unsigned char MIN_IN_HOUR = 60;
+const double START_TIME = 0.0;
+const double END_TIME = 1440.0;
+DaytimeEnum current_daytime = CLOSED;
 
-const double Generator::NEXT_ORD_IN_TIME = 2.0;
+
+/* time between two orders income, set by daytime event */
+double NEXT_ORD_IN_TIME = 0.0;
 
 int main(void)
 {
+    long seed = std::chrono::system_clock::now().time_since_epoch().count();
     /* initialize random number seed */
-    RandomSeed(time(nullptr));
+    RandomSeed(seed);
 
-    Print("project pizza\n");
-    Init(0.0, hour_to_min(1.0));
-    (new Generator)->Activate(Exponential(Generator::NEXT_ORD_IN_TIME));
+    Init(START_TIME, END_TIME);
+
+    (new Daytime)->Activate();
     Run();
 
     chef_fac.Output();
+    chef_que.Output();
+    oven_fac.Output();
+    oven_que.Output();
+    delivery_store.Output();
+    delivery_que.Output();
 
     return EXIT_SUCCESS;
-}
-
-double hour_to_min(double hour)
-{
-    return (hour * MIN_IN_HOUR);
 }
