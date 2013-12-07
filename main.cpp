@@ -1,11 +1,7 @@
 #include "main.h"
 #include "generator.h"
 
-Facility F1("F1");
-Facility F2("F2");
-
-Histogram H("H", 0, 1, 10);
-Histogram total_time("Total time", 0, 100, 10);
+Facility chef_fac("Chef");
 
 //unsigned int orders_in_system = 0;
 //const unsigned int max_orders_in_system = 10;
@@ -19,17 +15,15 @@ const double Generator::NEXT_ORD_IN_TIME = 2.0;
 
 int main(void)
 {
-    RandomSeed(time(nullptr)); //initialize random number seed
+    /* initialize random number seed */
+    RandomSeed(time(nullptr));
 
     Print("project pizza\n");
-    Init(0.0, 200.0);
+    Init(0.0, hour_to_min(1.0));
     (new Generator)->Activate(Exponential(Generator::NEXT_ORD_IN_TIME));
     Run();
 
-    //F1.Output();
-    //F2.Output();
-    //H.Output();
-    //total_time.Output();
+    chef_fac.Output();
 
     return EXIT_SUCCESS;
 }

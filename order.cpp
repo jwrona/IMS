@@ -1,24 +1,47 @@
 #include "order.h"
-#include "batch.h"
 #include "main.h"
+#include "batch.h"
+#include "timeout.h"
 
-Order::Order(void)
+Order::Order(bool reparation)
 {
     assert((businness_level+ bowling_level + others_level) == 100.0);
+
     id = all_order_cntr++;
+    batch_im_in = nullptr;
+    t = new Timeout(this, Exponential(100));
 
-    /*
-     * order priority assignment in at the specified ratio
-     */
-    double rnd = Uniform(0.0, 100.0); // 0 - 100 %
-
-    if (rnd <= businness_level)
-        Priority = BUSINESS;
-    else if (rnd <= (businness_level + bowling_level))
-        Priority = BOWLING;
+    if (reparation)
+    {
+        /* reparations have priority over everything */
+        Priority = REPARATION;
+    }
     else
-        Priority = OTHERS;
+    {
+	/* order priority assignment in at the specified ratio */
+	double rnd = Uniform(0.0, 100.0); // 0 - 100 %
+
+	if (rnd <= businness_level)
+	    Priority = BUSINESS;
+	else if (rnd <= (businness_level + bowling_level))
+	    Priority = BOWLING;
+	else
+	    Priority = OTHERS;
+    }
 }
+
+Order::~Order(void)
+{
+    /* cancel timeout if its not null pointer and
+     * it doesn't run right now (process made it to the end)
+     */
+    if ((t != nullptr) && (!t->Idle()))
+    {
+	t->Cancel();
+	t = nullptr;
+    }
+}
+
 
 void Order::Behavior(void)
 {
@@ -26,33 +49,32 @@ void Order::Behavior(void)
 
     /* save income time */
     income = Time;
-    H((double) Priority);
 
     /* seize by the first Order in the queue */
-    Seize(F1);
+    Seize(chef_fac);
     DEBUG("O: zarizeni zabrano\t");
 
     /*
      * create batch
      * push order which is occupying facility to the batch
      */
-    Batch *new_batch = new Batch(static_cast<Order*>(F1.in));
+    Batch *new_batch = new Batch(static_cast<Order*>(chef_fac.in));
 
     /*
      * fill batch with orders
      * pop from the top of the facility queue, push into batch
      */
-    //DEBUG("O: fronta pred pushem:\t" << F1.Q1->Length());
-    while (!F1.Q1->Empty() && !new_batch->is_full())
-	new_batch->add_order(static_cast<Order*>(F1.Q1->GetFirst()));
+    //DEBUG("O: fronta pred pushem:\t" << chef_fac.Q1->Length());
+    while (!chef_fac.Q1->Empty() && !new_batch->is_full())
+	new_batch->add_order(static_cast<Order*>(chef_fac.Q1->GetFirst()));
 
-    //DEBUG("O: fronta po pushi:\t" << F1.Q1->Length());
+    //DEBUG("O: fronta po pushi:\t" << chef_fac.Q1->Length());
 
     /*
      * insert Batch in the queue, specificaly on the first
      * place, because Batch has highest priority by default
      */
-    F1.Q1->Insert(new_batch);
+    chef_fac.Q1->Insert(new_batch);
 
     /*
      * no need to activate batch process
@@ -65,13 +87,13 @@ void Order::Behavior(void)
      * releasing the faciliti will cause its seize by Batch
      * because it is first in the queue
      */
-    assert(F1.in == this);
-    //DEBUG("O: fronta pred releasem:" << F1.Q1->Length());
+    assert(chef_fac.in == this);
+    //DEBUG("O: fronta pred releasem:" << chef_fac.Q1->Length());
 
-    Release(F1);
+    Release(chef_fac);
 
-    assert(F1.in == new_batch);
-    //DEBUG("O: fronta po releasu:\t" << F1.Q1->Length());
+    assert(chef_fac.in == new_batch);
+    //DEBUG("O: fronta po releasu:\t" << chef_fac.Q1->Length());
 
     /*
      * Passivate for the first process who created the batch.
@@ -79,4 +101,11 @@ void Order::Behavior(void)
      * be Activated, so they all have to be Canceled in Batch.
      */
     Passivate();
+}
+
+void Order::repare(void)
+{
+    Priority = REPARATION;
+    chef_fac.Q1->Insert(this); //causes SIGSEV, WHY?
+    std::cout << "inserted" << std::endl;
 }

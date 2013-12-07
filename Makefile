@@ -9,9 +9,9 @@
 # files
 
 TARGET = pizza
-SOURCES = main.cpp generator.cpp order.cpp batch.cpp
-HEADERS = main.h generator.h order.h batch.h
-OBJECTS = main.o generator.o order.o  batch.o
+SOURCES = main.cpp generator.cpp order.cpp batch.cpp timeout.cpp
+HEADERS = main.h   generator.h   order.h   batch.h   timeout.h
+OBJECTS = main.o   generator.o   order.o   batch.o   timeout.o
 
 #####################################
 # compiler, linker and options
