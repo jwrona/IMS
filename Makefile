@@ -10,8 +10,8 @@
 
 TARGET = pizza
 SOURCES = main.cpp generator.cpp order.cpp batch.cpp timeout.cpp daytime.cpp
-HEADERS = main.h   generator.h   order.h   batch.h   timeout.h   daytime.h
-OBJECTS = main.o   generator.o   order.o   batch.o   timeout.o   daytime.o
+HEADERS = $(SOURCES:.cpp=.h)
+OBJECTS = $(SOURCES:.cpp=.o)
 
 #####################################
 # compiler, linker and options
@@ -42,7 +42,9 @@ endif
 #####################################
 #build rules
 
-all: $(OBJECTS)
+all: $(SOURCES) $(TARGET)
+
+$(TARGET): $(OBJECTS)
 	$(LINK) $(LIBS) $(OFLAG) $(TARGET) $(OBJECTS)
 
 ndebug: CXXFLAGS += -DNDEBUG -O2
@@ -51,7 +53,7 @@ ndebug: ndebug_print
 ndebug_print: CXXFLAGS += -DNDEBUG_PRINT
 ndebug_print: all
 
-run:
+run: $(TARGET)
 	./$(TARGET)
 
 #####################################

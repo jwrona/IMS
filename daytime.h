@@ -34,7 +34,7 @@ class Daytime: public Event
      * 
      * average time between orders is 10 minutes
      */
-    const double CLOSED_C = 0.0; //orders doesn't come
+    const double CLOSED_C = 0.0; //orders don't come
     const double COMMON_C = 10.0;
     const double LUNCH_C = 8.0;
     const double DINNER_C = 7.0;
