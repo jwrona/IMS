@@ -28,9 +28,12 @@ public:
     };
 
 private:
-    const double businness_level = 10.0; //%
-    const double bowling_level   = 20.0; //%
-    const double others_level    = 70.0; //%
+    const double BUSINNESS_LEVEL = 1.3; //%
+    const double BOWLING_LEVEL   = 9.0; //%
+    const double OTHERS_LEVEL    = 89.7; //%
+
+    const double MAX_TIMEOUT_LENGTH = 120.0; //minutes
+    const double TIMEOUT_EXP_SLOPE = 5.0;
 
     double income;
     unsigned id;

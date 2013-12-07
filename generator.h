@@ -4,12 +4,11 @@
 #include <simlib.h>
 #include "order.h"
 
+extern double NEXT_ORD_IN_TIME;
+
 class Generator: public Event
 {
     void Behavior();
-
-public:
-    static const double NEXT_ORD_IN_TIME;
 };
 
 #endif //GENERATOR_H
