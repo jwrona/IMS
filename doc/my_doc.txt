@@ -1,0 +1,131 @@
+Koncepce
+********
+Zanedbání následujících vlivů, které nejsou pro validitu systému důležíté nebo
+nejsou předmětem simulace:
+
+-doba přijetí/zrušení objednávy: doba příjmu objednávky je tak krátká,
+že by ani při nejkratším intervaleu mezi objednávkami, který se v systému může
+vyskytovat, zbytek systému toto čekání nijak nemohlo ovlivnit
+
+-příchody objednávek na jeden kusu výrobku: model bude fungovat stejně ať už
+se vygeneruje objednávka na x kusů výrobku s intervalem mezi objednávkami t
+nebo x objednávek s intervaly t/x
+
+-rozvoz více výrobků (pizz) na stejnou adresu: ačkoli
+doručení plné várky na jednu adresu bude trvat podstatně kratší dobu než
+doručení plné várky na čtyři odlišné adresy, není toto třeba modelovat, protože
+data o dobách rozvozů (ref rozvoz) jsou zprůměrovaná na jednu pizzu
+
+/* tohle patří spíš do faktů
+-doba odchodu netrpělivých objednávek: nejdelší doba, po které je objednávka
+zákazníkem zrušena je uvedena v (ref nejdelsi_doba). Počet a čas objednávek
+zrušených před touto dobou se zjistit nepovedlo, bylo proto nutné
+tuto hodnotu vhodně aproximovat (ref ruseni_obednavek).
+*/
+
+-úrazy na pracovišti, změna pracovní směny
+
+
+Popis příchodu objednávky
+Nové objednávky přicházejí do bloku pro zpracování objednávek v intervalech
+daných exponenciálním rozložením hustoty pravděpodobnosti se střední hodnotou
+závislou na aktuální denní době(ref denni_doba). Nejčastěji objednávky
+přicházeji v době večeří naopak v zavírací době nepřicházejí žádné objednávky.
+
+Popis procesu objednávky
+Objednávka je přiřazena rovnoměrným rozložením hustoty pravděpodobnosti do
+jedné ze tří skupin. Rozděluje se dle poměru uvedeném v (ref pomer_obednavek)
+na firemní s největší prioritou, bowlingové s nižší prioritou a všechny ostatní
+objednávky s defaultní prioritou. Každá objednávka je modelována jako
+netrpělivá a odchází (je zrušena zákazníkem) po době dané vzorcem
+(maximální_čekací_doboa - exp(1/5)), kde maximální čekací doba je 120 minut
+(ref nejdelsi_doba). Objednávka se pokusí obsadit zařízení pizzař. Pokud
+rařízení není volné, zařádí se do prioritní frotny na pořadí odpovídající své
+prioritě a době příchodu. Pokud pizzař je volný, proces objednávky jej obsadí.
+Obsazení tohoto zařízení spustí vytvoření nové várky, objednávka tedy slouží
+jako trigger.
+
+Tvorba nové várky:
+Je vytvořena instance várky a proces
+objednávky, který momentálně obsazuje zařízení pizzař (trigger) je do této
+várky vložen. Následně jsou do várky vkládány objednávky z vrcholu
+fronty před pizzařem tak dlouho, dokud není zmiňovaná fronta prázdná anebo
+dokud není várka plná. Ačkoli trigger objednávka je již vložena do várky,
+v kódu pokračuje dále kde vloží vytvořenou várku do fronty před pizzaře.
+Várka musí mít nejvyšší prioritu, protože je ve frontě nutné ji zařadit na
+první místo. Trigger proces objednávky následně uvolňuje zařízení pizzař a
+pozastaví svůj běh na neurčito\footnote{172}. Uvolněním zařízení se do
+zařízení dostala várka tímto procesem vytovřena, protože byla na vrcholu
+fronty díky své nejvyšší prioritě. V tomto okamžiku je vytvořen objekt
+zapouzdřující 1-n objednávek, který obsazuje pizzaře.
+
+Popis procesu várky:
+Vysoká priorita várky již dále není potřeba, proto je tomuto procesu nastavena
+defaultní priorita.
+
+Příprava:
+Várka vchází do části systému, který simuluje přípravu těsta a jeho zdobení
+surovinami. Doba trvání tohoto úkonu je dle (ref priprava) 4 - 5 minut
+rovnoměrně pro každý výrobek ve várce. Kvůli netrpělivým objednávkám není
+možné spočítat počet objednávek ve várce a tolikrát čekat, je třeba zvolit
+jiný přístup, protože může nastat situace, kdy při přípravě prvního výrobku ve
+várce vyprší ostatním časovač a odejdou ze systému. Validita by potom utrpěla
+na přípravě už zrušených objednávek. Řešením je v každé iteraci kontrolovat,
+zda se daná objednávka ve várce ještě skutečně vyskytuje a dle toho upravit
+následující akce. Po zpracování všech objednávek ve várce je uvolněno zařízení
+pizzař.
+
+Kontrola zmetků:
+Každý výrobek po výstupu z přípravy projde kontrolou a s 1% pravděpodobností
+(ref zmetkovost) je na výrobku nalezena nějaká chyba. Tato část neobsahuje
+žádné čekání, protože kontrola je běžně prováděna současně s přípravou, zde
+jsou tyto bloky odděleny z důvodu lepší přehlednosti.
+
+Pečení:
+Ještě před obsazením pece je nutné zkontrolovat, zda během předchozích
+čekání nevypršely všem objednávkám časovače. V takovém případě by byla várka
+prázdná a pec by byla zabrána prázdnou várkou. Jednoduchou podmínkou se tomu
+lze vyhnout. Várka se potom pokouší o obsazení pizza pece. Zde bych zdůraznil,
+že všem várkám byla dříve nastavena výchozí hodnota priority. Ve várce se již
+nerozlišuje zda všechny její objednávky mají vysokou prioritu či naopak. Tento
+koncept je totožný se zacházením s objednávkami v modelovaném systému, kde se
+prioritní fronty tvoří pouze před přípravou pizzy. Při volné peci proběhne
+pečení s přesnou dobou trvání pět minut (ref peceni) bez ohledu na počet
+výrobků ve várce. Po uplynutí této doby je zařízení uvolněno a tak jako u
+přípravy i zde se provádí kontrola zmetků s tím rozdílem, že se kontrolou
+projdou buď všechny výrobky ve várce nebo žádný. Taková chování simuluje
+především přehřátí trouby, která způsobí spálení ne konkrétních výrobků ale
+všech najednou.
+
+Doručení:
+Doručování se tak jako pečení nekoná, pokud je várka prázdná. Várka se pokusí
+vstoupit do skladu, která zde modeluje doručovací auto s řidičem. Počet
+nasazených řidičů se mění, nicméně nejčastěji mají směnu tři řidiči (ref ridic)
+proto má sklad kapacitu tři. Po vstupu do skladu (naložení várky do auta)
+je proveden rozvoz o době trvání 10 až 20 minut rovnoměrně (ref rozvoz). I zde
+stále objednávky mají běžící časovač simulující zrušení objednávky zákazníkem
+po určité době, řešení této situace je totožné jako při přípravě těsta a
+zdobení. Po uplynutí doby rozvozu se auto vrací zpět a várka opouští sklad.
+Tímto je simulace jedné várky a jí přislušejících objednaných produktů u
+konce. Úspěšně ukončeným procesům je nutné smazat časovač, především jeho
+záznam v kalendáři. Neúspěšné procesy (zmetky) mají časovač již odstraněný.
+Úspěšné ale i nedokončené objednávky v tomto bodě odcházejí ze systému.
+
+4. Architektura simulačního modelu/simulátoru
+Jedná se o simulační model vytvořený jako aplikace bez dynamických vstupů
+(parametrů), veškerá data se mění ve zdrojových souborech. Výstupem je textový soubor,
+ve kterém se nachází základní statistiky všech použitých zařízení, skladů a
+jejich příslušných front. Překlad i spuštění je zajištěn utilitou Make a
+ovládá se příkazy make, make run, make clean.
+4.1 mapování abstraktního modelu do simulačního
+Změna denních dob je implementováno ve třídě Daytime, která dědí od třídy
+Event. V její metodě Behavior() je aktivována instance třídy Generator pro
+vytváření vstupních zakázek/objednávek. Objednávka je abstrahována třídou Order s rodičovskou třídou Process.
+Dávka či várka, která zajišťuje zapouzdření objednávek do jednoho objektu, je
+realizována třídou Batch taktéž dědící od Process. Další třída Timeout
+implementuje objednávkám netrpělivost. Posledními třídami jsou FailureEvent a
+FailureProcess (název napovídá jejich předky), které zajišťují vygenerování a
+obsluhu (opravu) poruchy.
+
+Všechny fronty jsou typu FIFO implementovány jako instance třídy Queue, zařízení jsou instance třídy
+Facility a sklad je pro změnu instance třídy Store.

@@ -1,0 +1,205 @@
+1 Úvod
+
+Úkolem tohoto projektu je sestavení simulačního modelu systému SHO výrobní
+linky. Námi vybraná výrobní linka je rozvoz pizzy po Brně. Na základě simulace s
+tímto modelem budeme zkoumat jednotlivé procesy při samotné výrobě. Hlavními
+faktory pro zkoumání bude vytíženost pizzaře, vytíženost pizza pece a v neposlední
+řadě také využití řidičů (aut).
+
+Při zamyšlení se nad tímto tématem nás může napadnout, proč vůbec řešit
+toto téma, má to vůbec smysl? Odpověď je vcelku jasná. V dnešní době je
+základem úspěšné firmy správné a efektivní hospodaření s finančními
+prostředky. Cílem experimentů bude tedy zjistit, aktuálnost vytížení
+jednotlivých prvků v systému a případný návrh optimalizace provozu firmy
+s nižšími náklady. Pokládám tuto otázku jako velice důležitou.
+
+Požadované kritéria firmy byly nasledující:
+-aby průměrná vytíženost pizzaře byla 60%
+-počet řidičů (aut), která mají být k dispozici, aby výtěžnost byla přes 70%
+
+1.1 Zdroje faktů
+
+Pro získání přesných vstupních dat jsme využili konzultace se zaměstnancem
+firmy, který nám poskytl veškerá přesná data za účelem samotné optimalizace
+provozu firmy. Bral tento náš projekt jako přínos pro firmu, kde je zaměstnám.
+Dalším našim zdrojem informací bylo kontaktování gastro firem, abychom zjistili
+přesná čísla poruchovosti zařízení (v našem případě pizza pece).  Hlavní
+parametry pro zkoumání firmy:
+-jeden pizzař
+-jedna pizza pec pro 4 ks pizz
+-tři řidiči každý den (12,5 hodiny)
+
+1.2 Validita modelu
+
+Při vytváření modelu jsme čerpali z výše uvedených zdrojů. Námi vytvořený model
+se chová dle očekávaní zaměstnance firmy a odpovídá reálnému běhu firmy.
+
+
+2 Rozbor tématu a použitých metod/technologií
+
+Modelovaná firma (rozvoz pizzy) se dá rozložit do 4 významných částí. Jsou jimi:
+a)příjem objednávek
+b)příprava těsta a zdobení pizzy
+c)pečení pizzy
+d)expedice
+Každá z těchto částí pro nás znamenala zkoumání a zjišťování faktů a to, jak už
+osobním pozorováním, tak konzultace s zaměstnanci firmy. V počátečním návrhu
+jsme nepředpokládali takové množství problémů, možností a stavů které můžou nastat.
+
+Ad a) tato část v sobě skrývá filtrování příjmu objednávek. Námi zkoumaná firmy
+dostává objednávky od 3 zdrojů:
+-firemní objednávky
+-bowling
+-ostatní
+Když se podíváme na procentuální rozdělení (tabulka 1), tak firemní objednávky tvoří 8%
+celkových objednávek, bowling 12% a ostatní zbývajících 80%. Jsou to čísla braná
+ze statistiky za poslední 3 měsíce a zaokrouhlená na celé číslo. Na první pohled
+se může zdát, že 8% je nízké číslo. Ale opak je pravdou. Právě na tyto firemní
+objednávky je kladen největší důraz a mají nejvyšší prioritu. Je to vše
+zapříčiněno tím, že firemní objednávky nechodí často, ale ve větším počtu.
+Naopak ostatní objednávky jsou procentuálně na vysoké úrovni, ale bývají to
+objednávky po jednom kuse. Poslední skupinou je bowling, má vyšší prioritu než
+ostatní, protože jsou firmy dohodnuté na jiných podmínkách (čas doručení do
+60-ti minut).
+
+Skupina 		počet objednavek/měsíc (říjen)	procentuální vyjádření
+firemní objednávky		384					8%
+bowling			        576					12%
+ostatní                         3840					80%
+----------------------------------------------------------------------------------------------------
+celkem				4800					100%
+
+ad b) námi zkoumaná firma má zavedený systém, že pizzař si z jednotlivých
+objednávek vytváří dávky. Tyto dávky mohou obsahovat maximálně 4ks, což je
+kapacita jednoho patra v pizza peci. Samozřejmě pokud pizzař je zrovna volný a
+už se mu nakumulovalo i méně než 4ks pizz (tzn.3, 2 nebo 1ks), začne vytvářet
+dávku s menším množstvím. Je tím pádem menší vytíženost pece, ale objednávky
+rychleji postupují směrem k expedici.
+
+Ad c) tento proces je velice jednoduchý, spočívá pouze v přesunutí várky do
+pizza pece. Zde se tato várka peče určitou dobu. Stojí zde snad za zmínku
+možnost vytvoření zmetku. Procentuálně se tato chyba dá vyjádřit 1% z celkového
+počtu objednávek.
+
+Ad d) proces expedice lze rozdělit na 3 lokality, kam firma dováží. Pokud to
+vezmeme jednodušší formou, tak 1.zóna obsahuje Brno město. 2.zóna se nachází v
+okrajových částech Brna (Bohunice, Líšeň,...). A poslední 3.zóna je většinou
+mimo město (Modřice, Jehnice. Bílovice nad Svitavou,...). Do jednotlivých zón je
+čas strávený řidičem k doručení objednávky odlišný (viz.tabulka 2). V našem
+modelu jsme neměli potřebu zavádět tento odlišné časy doručení. Vypočítali jsme
+si proto průměr doručení s odchylkou, o kterou může být čas nižší nebo vyšší.
+
+Zóny	počet objednávek/měsíc	průměrný čas (min) procentuální vyjádření
+1.		2500				11 ~52%
+2.		1500				18 ~31%
+3.		800				22 ~17%
+------------------------------------------------------------------------------------------------------
+celkem		4800				~15
+100%
+
+Tyto všechny údaje jsou za předpokladu otevírací doby 12,5 hodin denně.
+
+
+2.1 Postupy při vytváření modelu
+
+Pro vytvoření našeho modelu firmy jsme využili knihovny SIMLIB/C++. Jedná se o
+objektově orientovanou knihovnu pro jazyk C++. Tato knihovna patři mezi základní
+nástroje pro simulaci.
+
+
+2.2. Původ použitých technologíí
+
+Veškeré technologie, které jsme použili v tomto projektu byly získány z předmětu
+Modelování a simulace, z dokumentace a příkladů knihovny SIMLIB/C++.
+
+5. Podstata simulačních experimentů a jejich průběhů
+
+Cílem experimentů je optimalizace provozu firmy s nižšími náklady, nebo naopak,
+jak navýšit prodej a tím pádem zvýšit zisk firmy. Budeme zjišťovat, jaké zdroje
+je potřeba navyšovat, případně v určitých hodinách snižovat. Zda se nevyplatí na
+určité hodiny spustit do provozu druhou pec na pizzu.
+
+5.1. Postup experimentování
+
+Simulace bude probíhat následujícím způsobem. Nejdříve jsme nastavili veškeré
+vstupní údaje (příjem objednávek, počet pizzařů, výtěžnost pece a kapacitu
+řidičů). Zjistíme, kde se tvoří velké fronty nebo naopak, kde vznikají volná
+místa (nízká využitelnost). Následně budeme jednotlivé tyto hodnoty upravovat
+(navyšovat nebo ubírat), dokud nenalezneme optimální hodnoty, které pomohou ke
+zlepšení chodu firmy.
+
+5.2 Experimentování
+
+Nejprve jsme provedli simulaci celého dne, abychom viděli rozložení objednávek
+během dny, musíme totiž zkoumat, zda se jedná o obědy, večeře nebo období mezi
+těmito úseky. Vše je znázorněno v grafu...
+
+GRAF1
+
+Z grafu je patrné, že nás bude nejvíce zajímat večerní období, kdy je četnost
+objednávek nejvyšší. A zároveň bude nutnost provést mnoho experimentů na
+odpolední období, kdy zase nastává druhý extrém a to ten, že bude možnost
+redukování počtu řidičů. Nesmíme však zapomenout i na experimenty v obědovém
+období.
+
+	Za zmínku dále stojí čas, po kterou byly jednotlivé objednávky v systému
+	rozdělené podle priorit. Vše je zobrazeno v následující tabulce.
+
+Priorita	Průměrný čas v systému (minuty) firemní			19,8
+bowling		28,1 ostatní			38,3
+
+	Pustíme se experimentů provozu přes obědy. Zde za aktuálních podmínek
+	bylo reálné využití pizzaře kolem 35%. Fronta se nicméně vytvářela, ale
+	malým množstvím objednávek se vytvářely z velké části dávku o velikosti
+	1ks pizz a průměrné zdržení dávky bylo 2 minuty. U čísel výtěžnosti
+	samotné pece je jasně patrné, že je vytěžována minimálně, cca 12%.
+	Fronta se zde vytvořila zhruba u 1/3 dávek. A průměrný strávený čas ve
+	frontě byl cca 2,5 minuty. A poslední námi zkoumaná část jsou řidiči. Z
+	počátečního nastavení 3 řidičů je průměrná výtěžnost lehce nad 30%. Je
+	tedy jasně patrné, ze v tomto období se nesplňují optimální podmínky
+	firmy. A to jak výtěžnost pizzaře, tak ani řidičů (aut).  Pro zlepšení
+	podmínek jsme provedli experimenty a k optimalizaci vedla pouze úprava
+	počtu řidičů a to zredukováním na 2 řidiče. Nyní se výtěžnost řidičů
+	zvedla před 60% a zároveň se stále netvořily velké fronty, pouze u 1/3
+	dávek s průměrnou čekací dobou pod 10 minut, což splňuje podmínky firmy.
+	A díky experimentům můžeme firmě doporučit, aby při dvou řidičích se
+	pokusila a navýšení objednávek přes obědy o 20%, pak budou splněny
+	veškeré vstupní podmínky.
+
+	Dále se pustíme zkoumání provozu v odpoledních hodinách (13:00 – 18:00).
+	Nyní se nacházíme u výtěžnosti pizzaře pod 27%, fronta byla takřka
+	nulová. A většina dávek obsahovala jednu pizzu a maximálně dva kusy pizz
+	s tím, že zdržení dávek bylo průměrně lehce pod 1 minutu. Pizza pec má
+	stejnou výtěžnost jako v poledních hodinách. Sice se dělá menší množství
+	objednávek, nicméně počet dávek je zhruba stejný. Proto je výtěžnost
+	stejná, ale mnohem nižší využití. Pokud je již vytvořila fronta u pizza
+	pece (cca 10%), byla průměrná doba strávená ve frontě pod 1 minutu. U
+	počátečního stavu 3 řidičů byla výtěžnost pod 20% procent a fronta se
+	vytvářela zhruba u 1 objednávek, s průměrným časem 4,2 minuty.
+	Experimenty prováděné v tomto období byly opět směřované především na
+	počet řidičů. Zde již nebylo nalezeno jednoznačného řešení. Nastaly zde
+	2 možnosti řešení k nalezení lepšího řešení. Jednou je možnost opět
+	omezení řidičů na 2. Dostaneme se pak k výtěžnosti řidičů přes 50% a
+	fronty se vytvářejí u 1/3 dávek s průměrnou dobou 4,5 minut. Nebo je pak
+	možnost omezit řidiče na 1, zmiňovaná výtěžnost se zvedne přes 80%, ale
+	nastává zde problém s čekáním dávek ve frontách. Průměrný čas se sice
+	pohybuje kolem 25 minut, což by ještě splňovalo podmínky firmy. Ale už
+	byl i maximální čas 85 minut, toto číslo již je velice špatné. Proto se
+	opět volí jako ideální varianta opět 2 řidiči. A aby se firma pokusila o
+	navýšení objednávek o 100% a bude model vytěžován efektivně a budou
+	splněny veškeré podmínky firmy.
+
+	Poslední částí z experimentů je večerní provoz. Zde je výtěžnost pizzaře
+	přes 60%. Každopádně se zde již začaly tvořit fronty dávek u pizzaře a
+	to zhruba u 2/3 příchozím objednávek, ale průměrný čas byl 7,2 minuty.
+	Zde většina objednávek obsahovala 2 kusy pizz. Podíváme-li se na
+	výtěžnost pece, dostáváme se k číslům kolem 45%. A už se zde hromadí i
+	várky u poloviny objednávek s průměrnou dobou 5 minut. U řidičů je
+	výtěžnost při těchto požadavcích přes 80% a průměrnou dobou čekání 18,2
+	minut. Už se již zde navýšilo číslo objednávek, u kterých vypršel
+	timeout a byly tudíž odstraněny ze systému, stalo se tak u 2 objednávek.
+	V tomto období jsou splněny veškeré podmínky firmy. Provedli jsme mnoho
+	experimentů, za účelem navýšení efektivnosti, ale žádná z možností se
+	neukázala jako lepší. Byla by možnost pořídit ještě jednou pec s
+	kapacitou 4 ks pizz, ale mělo by to za následek zvýšení ztrátovosti
+	objednávek, protože by se tvořily velké fronty u řidičů.

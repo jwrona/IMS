@@ -63,8 +63,8 @@ touch:
 	touch $(SOURCES) $(HEADERS)
 
 compress:
-	tar -cf $(TARGET).tar $(SOURCES) $(HEADERS) Makefile
-	gzip $(TARGET).tar
+	tar -cf "03_xwrona00_xkubin15.tar" $(SOURCES) $(HEADERS) Makefile ./doc/ims.pdf
+	gzip "03_xwrona00_xkubin15.tar"
 
 clean:
 	rm -f $(OBJECTS) *~
