@@ -7,7 +7,7 @@
     #define DEBUG(x) do {\
     std::cout << x << "\tid = " << id << "\tPriority = "\
     << static_cast<unsigned>(Priority) <<"\tsim time = " << Time\
-    << "\treal time = " << static_cast<unsigned>(Time / 60) << ':'\
+    << "\treal time = " << static_cast<unsigned>(Time / 60) % 24 << ':'\
     <<  static_cast<unsigned>(fmod(Time, 60)) << std::endl;\
     } while (0)
 #else

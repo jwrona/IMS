@@ -7,7 +7,15 @@ Order::Order(bool reparation)
 {
     assert((BUSINNESS_LEVEL+ BOWLING_LEVEL + OTHERS_LEVEL) == 100.0);
 
+    /* order id for debug */
     id = all_order_cntr++;
+
+    /* all orders in system now counter */
+    /* cannot be used, is not decremented anywhere
+    if (++orders_in_system_now >= MAX_ORDERS_IN_SYSTEM)
+        refuse_orders = true;
+    */
+
     batch_im_in = nullptr;
     double timeout_length = MAX_TIMEOUT_LENGTH
                             - Exponential(1.0 / TIMEOUT_EXP_SLOPE);

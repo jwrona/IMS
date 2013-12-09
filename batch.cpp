@@ -67,7 +67,7 @@ void Batch::Behavior(void)
         {
             /* order not canceled yet
              * going to wait (prepare pizza)
-             * 2 to 3 minutes for every pizza
+             * 4 to 5 minutes for every pizza
              */
             Wait(Uniform(PREP_TIME_FROM, PREP_TIME_TO));
 
@@ -131,8 +131,8 @@ void Batch::Behavior(void)
      */
     if (!is_empty())
     {
-        DEBUG("BAKING\t\t\t");
         Seize(oven_fac);
+        DEBUG("BAKING\t\t\t");
         Wait(BAKING_TIME);
         Release(oven_fac);
         DEBUG("BAKING DONE\t\t");
@@ -170,8 +170,8 @@ void Batch::Behavior(void)
      */
     if (!is_empty())
     {
-        DEBUG("DELIVERY\t\t");
         Enter(delivery_store);
+        DEBUG("DELIVERY\t\t");
 
         begin = orders.begin();
         end = orders.end();

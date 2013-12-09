@@ -9,7 +9,7 @@
 # files
 
 TARGET = pizza
-SOURCES = main.cpp generator.cpp order.cpp batch.cpp timeout.cpp daytime.cpp
+SOURCES = main.cpp generator.cpp order.cpp batch.cpp timeout.cpp daytime.cpp failure_event.cpp failure_process.cpp
 HEADERS = $(SOURCES:.cpp=.h)
 OBJECTS = $(SOURCES:.cpp=.o)
 

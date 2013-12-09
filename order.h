@@ -11,6 +11,9 @@
 extern Facility chef_fac;
 
 extern unsigned all_order_cntr;
+extern unsigned orders_in_system_now;
+extern bool refuse_orders;
+extern const unsigned MAX_ORDERS_IN_SYSTEM;
 
 /* forward declarations */
 class Timeout;
@@ -28,9 +31,9 @@ public:
     };
 
 private:
-    const double BUSINNESS_LEVEL = 1.3; //%
-    const double BOWLING_LEVEL   = 9.0; //%
-    const double OTHERS_LEVEL    = 89.7; //%
+    const double BUSINNESS_LEVEL = 8.0; //%
+    const double BOWLING_LEVEL   = 12.0; //%
+    const double OTHERS_LEVEL    = 80.0; //%
 
     const double MAX_TIMEOUT_LENGTH = 120.0; //minutes
     const double TIMEOUT_EXP_SLOPE = 5.0;

@@ -26,17 +26,19 @@ class Daytime: public Event
     /* average time (in minutes) between two orders income
      * very importatnt numbers
      *
-     * 75 orders per day
+     * 4800 orders per month
+     * 160 orders per day
      * 12.5 working hours
      * ------------------
-     * 6 orders per hour
+     * 12.8 orders per hour
      * 60 minutes
+     * ----------
      * 
-     * average time between orders is 10 minutes
+     * average time between orders is 4.7 minutes
      */
     const double CLOSED_C = 0.0; //orders don't come
-    const double COMMON_C = 10.0;
-    const double LUNCH_C = 8.0;
-    const double DINNER_C = 7.0;
+    const double COMMON_C = 6.0;
+    const double LUNCH_C = 4.4;
+    const double DINNER_C = 3.9;
 };
 #endif //DAYTIME_H

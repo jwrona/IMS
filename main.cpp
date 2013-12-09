@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 
+#include "failure_event.h"
 #include "main.h"
 #include "generator.h"
 #include "daytime.h"
@@ -18,19 +19,25 @@ Store delivery_store("Delivery", DELIVERY_CARS, &delivery_que);
 
 Generator order_generator;
 
-//unsigned int orders_in_system = 0;
-//const unsigned int max_orders_in_system = 10;
+/* flag set by failure to ensure all new orders will be
+ * immediately refused as they come in */
+bool refuse_orders = false;
+
+unsigned orders_in_system_now = 0;
+const unsigned MAX_ORDERS_IN_SYSTEM = 10;
 //unsigned int refused_orders = 0;
 unsigned all_order_cntr = 0;
 unsigned all_batch_cntr = 0;
 
 const double START_TIME = 0.0;
-const double END_TIME = 1440.0;
+const double END_TIME = 1400.0;
 DaytimeEnum current_daytime = CLOSED;
 
 
-/* time between two orders income, set by daytime event */
+/* time between two orders, set by daytime event */
 double NEXT_ORD_IN_TIME = 0.0;
+/* time between two failures */
+double NEXT_FAILURE_IN_TIME = 129600.0; //3 months
 
 int main(void)
 {
@@ -41,6 +48,7 @@ int main(void)
     Init(START_TIME, END_TIME);
 
     (new Daytime)->Activate();
+    (new FailureEvent)->Activate(Time + Exponential(NEXT_FAILURE_IN_TIME));
     Run();
 
     chef_fac.Output();
