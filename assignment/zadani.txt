@@ -1,0 +1,41 @@
+Okruh 3: SHO Výrobní linka
+
+Navrhněte a vytvořte model SHO výrobní linky, popřípadě sady výrobních linek
+zvoleného nebo hypotetického výrobního závodu. Výrobní proces jednoho výrobku se
+musí skládat z alespoň tří výrobních úkonů (operace), každý na jiném zařízení.
+Do systému budou přicházet objednávky na určený počet kusů výrobku. Objednávkám
+lze přiřazovat priority. Výrobní proces si lze představit jako zřetězení
+přepravních várek (várka např. 4 ks) - takže objednaný počet kusů se rozdělí do
+přepravních várek a ty postupují výrobním procesem. Na přepravní várky se
+vztahují priority objednávky, ze které pochází. Výroba jedné přepravní várky v
+operaci je nepřerušitelná. Experimenty zjistěte chování systému, především doby
+strávené v systému u objednávek - celkovou, od započetí první výrobní operace na
+objednávce, doby prostojů ve frontách a podobně.
+
+Poznámky:
+-najít EXISTUJÍCÍ firmu, které vyrábí produkty a používá k tomu výrobní (montážní)
+ linku, tedy systém hromadné obsluhy
+-nemusí to nutně být pásová výroba, může se jednat o paralelně běžící stroje,
+ které ve finále vyrobí produkt (materiál -> řezačka -> soustruh -> vrtačka ->
+ hotový produkt)
+-jako vstupní transakce se očekávají zakázky (požadavky na výrobu) s
+ parametry: typ výrobku, množství, termín
+-zakázka se rozloží do výrobních várek
+-výrobní várka = transakce
+-tyto várky následně putují po různých strojích
+
+-určit:
+  -vytížení strojů
+  -délky front před stroji
+  -doba řešení zákazky
+  -výpadky
+  -atd.
+
+-experimanty:
+  -režimy provozu
+  -pořadí transakcí ve výrobě
+  -počet výrobních linek
+  -pořet personálu
+
+Validita je vysoce závislá na správnost procesu příchodu požadavků! Tzn jeho
+nepravidelnost (rozdílné rozložení požadavků např. dle denní doby)

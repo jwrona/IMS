@@ -1,0 +1,27 @@
+Do systému přicházejí objednávky a řadí se dle priorit do tří front.
+
+Pec má kapacitu čtyři kusy, proto je jedna várka 4 kusy. Pokud se fronta
+naplní čtyřmi objednávkami, přejdou do přípravy. Pokud se fronta nenaplní
+do 20 minut, objednávky přejdou do přípravy i pokud se várka nenaplní.
+
+Do systému přicházejí objednávky, ze tří zdrojů. Tyto zdroje jsou rozloženy
+následovně vzhledem k celkovému počtu objednávek:
+10% firemní objednávky
+20% objednávky z bowlingu
+70% obstaní objednávky
+
+Firemní objednávky mají nejvyšší prioritu, bowling nižší a ostatní objednávky
+nejnižší.
+Pokud se nakaupí určitý počet objednávek, který je hraniční pro včasné doručení,
+další objednávky nejsou přijímány vůbec žádné, nezáleží na jejich prioritě.
+
+Každá objednávka by si při vytvoření měla spustit časovač na dobu exp(2),
+po které objednávka odchází ze systému ať je kdekoliv. Tohle simuluje
+volání zákazníka, že už objednanou pizzu nechce.
+
+Proces přípravy pizzy (zdobení) bude závislý na počtu pizz ve várce. Jedna várka
+(max 4 pizzy) obsadí pizzaře. Volitelné rozšíření tohoto procesu je
+vytvoření skladu bochánků těsta s počáteční kapacitou např. 100, který by každá
+pizza dekrementovala. Při nulovém počtu se pizzař přesune k přípravě těsta,
+kde si vyrobí např. 100 ks těsta, což mu zabere nějakýá čas. Potom se vrátí
+ke zdobení.
