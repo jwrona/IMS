@@ -1,4 +1,3 @@
-IMS
-===
+# IMS
 
-Okruh 3: SHO Výrobní linka
+Team school project for the Modelling and Simulation course.
